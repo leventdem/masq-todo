@@ -1,0 +1,46 @@
+{
+  "name": "masq-todo",
+  "version": "0.0.1",
+  "description": "Masq todo application for demo purpose",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "./node_modules/.bin/babel ./src --experimental -d ./dist && browserify ./dist/index.js --standalone MasqTodo> dist/MasqTodo.js",
+    "minify": "npm run build && uglifyjs ./dist/MasqTodo.js -o ./dist/MasqTodo.min.js --compress --mangle -- ",
+    "dist": "npm run minify",
+    "start": "npm run dist && http-server ."
+  },
+  "author": {
+    "name": "Levent Demir",
+    "email": "l.demir@qwant.com"
+  },
+  "contributors": [
+    {
+      "name": "Andrei Sambra",
+      "email": "a.sambra@qwant.com"
+    }
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/QwantResearch/masq-todo.git"
+  },
+  "dependencies": {
+    "fast-json-patch": "^2.0.6"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "browserify": "^14.5.0",
+    "chai": "^4.1.2",
+    "eslint": "^4.13.1",
+    "eslint-config-standard": "^11.0.0-beta.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-react": "^7.5.1",
+    "eslint-plugin-standard": "^3.0.1",
+    "http-server": "^0.10.0",
+    "mocha": "^4.1.0",
+    "uglify-js": "^3.1.10"
+  }
+}
