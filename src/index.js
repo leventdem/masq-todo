@@ -15,46 +15,45 @@
   var newTodoDom = document.getElementById('new-todo')
 
   // We have to create a new todo document and enter it in the database
-  function addTodo(text) {
+  function addTodo (text) {
     var todo = {
       _id: new Date().toISOString(),
       title: text,
       completed: false
     }
     currentNotes.push(todo)
-    setItem('notes',currentNotes)
+    setItem('notes', currentNotes)
     redrawTodosUI(currentNotes)
   }
 
   // Show the current list of todos by reading them from the database
-  function showTodos() {
+  function showTodos () {
     dbData.allDocs({ include_docs: true, descending: true }, function (err, doc) {
       console.log(doc)
       redrawTodosUI(doc.rows)
     })
   }
 
-  function checkboxChanged(todo, event) {
+  function checkboxChanged (todo, event) {
     let index = currentNotes.findIndex(x => x._id === todo._id)
     console.log(currentNotes[index])
     currentNotes[index].completed = event.target.checked
-    setItem('notes',currentNotes)
+    setItem('notes', currentNotes)
     redrawTodosUI(currentNotes)
-    
   }
 
   // User pressed the delete button for a todo, delete it
-  function deleteButtonPressed(todo) {
+  function deleteButtonPressed (todo) {
     let index = currentNotes.findIndex(x => x._id === todo._id)
     console.log(currentNotes[index])
-    currentNotes.splice(index,1)
-    setItem('notes',currentNotes)
+    currentNotes.splice(index, 1)
+    setItem('notes', currentNotes)
     redrawTodosUI(currentNotes)
   }
 
   // The input box when editing a todo has blurred, we should save
   // the new title or delete the todo if the title is empty
-  function todoBlurred(todo, event) {
+  function todoBlurred (todo, event) {
     var trimmedText = event.target.value.trim()
     if (!trimmedText) {
       dbData.remove(todo)
@@ -65,7 +64,7 @@
   }
 
   // Initialise a sync with the remote server
-  function sync() {
+  function sync () {
     syncDom.setAttribute('data-sync-state', 'syncing')
     var opts = { live: true }
   }
@@ -76,12 +75,12 @@
   // var remoteCouch = ''
 
   // There was some form or error syncing
-  function syncError() {
+  function syncError () {
     syncDom.setAttribute('data-sync-state', 'error')
   }
 
   // User has double clicked a todo, display an input so they can edit the title
-  function todoDblClicked(todo) {
+  function todoDblClicked (todo) {
     var div = document.getElementById('li_' + todo._id)
     var inputEditTodo = document.getElementById('input_' + todo._id)
     div.className = 'editing'
@@ -90,7 +89,7 @@
 
   // If they press enter while editing an entry, blur it to trigger save
   // (or delete)
-  function todoKeyPressed(todo, event) {
+  function todoKeyPressed (todo, event) {
     if (event.keyCode === ENTER_KEY) {
       var inputEditTodo = document.getElementById('input_' + todo._id)
       inputEditTodo.blur()
@@ -99,7 +98,7 @@
 
   // Given an object representing a todo, this will create a list item
   // to display it.
-  function createTodoListItem(todo) {
+  function createTodoListItem (todo) {
     console.log('1.2', todo)
     var checkbox = document.createElement('input')
     checkbox.className = 'toggle'
@@ -140,30 +139,32 @@
     return li
   }
 
-  function redrawTodosUI(todos) {
+  function redrawTodosUI (todos) {
     var ul = document.getElementById('todo-list')
     ul.innerHTML = ''
-    // console.log("0.2", todos)
-    todos.forEach(function (todo) {
+    console.log('0.2', todos)
+    if (todos) {
+      todos.forEach(function (todo) {
       // console.log("0.3", todo)
       // ul.appendChild(createTodoListItem(todo))
-      ul.appendChild(createTodoListItem(todo))
-    })
+        ul.appendChild(createTodoListItem(todo))
+      })
+    }
   }
 
-  function newTodoKeyPressHandler(event) {
+  function newTodoKeyPressHandler (event) {
     if (event.keyCode === ENTER_KEY) {
-      console.log(("press key"))
+      console.log(('press key'))
       addTodo(newTodoDom.value)
       newTodoDom.value = ''
     }
   }
 
-  function addEventListeners() {
+  function addEventListeners () {
     newTodoDom.addEventListener('keypress', newTodoKeyPressHandler, false)
   }
 
-  function handshake() {
+  function handshake () {
     window.postMessage(
       {
         from: 'webpage',
@@ -172,7 +173,7 @@
         data: 'hello'
       }, '*')
   }
-  function initDB() {
+  function initDB () {
     window.postMessage(
       {
         from: 'webpage',
@@ -209,14 +210,12 @@
       }, '*')
   }
 
-
   addEventListeners()
   handshake()
   initDB()
   // delay(1000).then(() => {
   //   setItem('notes', [10, 20])
   // })
-
 
   let notes = {
     rows: [
@@ -233,11 +232,8 @@
     getItem('notes')
   })
 
-
-
   // redrawTodosUI(notes.rows)
   // showTodos()
-
 
   /**
   *  Receive messages from contentscript
@@ -246,38 +242,38 @@
   window.addEventListener('message', function (event) {
     // We only accept messages from ourselves
     let parsedData = null
-    if (event.source != window) { return; }
+    if (event.source != window) { return }
 
-    if (event.data.to && (event.data.to == "webpage")) {
+    if (event.data.to && (event.data.to == 'webpage')) {
       switch (event.data.type) {
         case 'handshake_ack':
           console.log('Webpage script : ')
           console.log(`${event.data.to} receives a ${event.data.type} from ${event.data.from}`)
           //   console.log("Content script sends this message to backgound: " + event.data)
 
-          break;
+          break
         case 'set_ack':
           console.log('Webpage script : ')
           console.log(`${event.data.to} receives a ${event.data.type} from ${event.data.from}`)
           //   console.log("Content script sends this message to backgound: " + event.data)
 
-          break;
+          break
         case 'get_ack':
           parsedData = JSON.parse(event.data.data)
           console.log('Webpage script : ')
           console.log(`${event.data.to} receives a ${event.data.type} from ${event.data.from}`)
           console.log()
-          currentNotes = parsedData.value
+          if (parsedData.value) {
+            currentNotes = parsedData.value
+          }
           redrawTodosUI(currentNotes)
           //   console..datalog("Content script sends this message to backgound: " + event.data)
 
-          break;
+          break
 
         default:
-          break;
+          break
       }
     }
   }, false)
-
-
 })()
