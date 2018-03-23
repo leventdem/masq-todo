@@ -54,18 +54,23 @@
     // console.log(currentNotes[index])
     currentNotes[index].completed = event.target.checked
     setItem('notes', currentNotes)
-    redrawTodosUI(currentNotes)
+      .then(redrawTodosUI(currentNotes))
+      .catch(err => {
+        console.log(err)
+      })
   }
 
   // User pressed the delete button for a todo, delete it
   const deleteButtonPressed = todo => {
     let index = currentNotes.findIndex(x => x._id === todo._id)
-    // console.log(currentNotes[index])
+    console.log(currentNotes[index])
     currentNotes.splice(index, 1)
     setItem('notes', currentNotes)
-    redrawTodosUI(currentNotes)
+      .then(redrawTodosUI(currentNotes))
+      .catch(err => {
+        console.log(err)
+      })
   }
-
   // The input box when editing a todo has blurred, we should save
   // the new title or delete the todo if the title is empty
   const todoBlurred = (todo, event) => {
@@ -77,7 +82,10 @@
       currentNotes[index].title = trimmedText
     }
     setItem('notes', currentNotes)
-    redrawTodosUI(currentNotes)
+      .then(redrawTodosUI(currentNotes))
+      .catch(err => {
+        console.log(err)
+      })
   }
 
   // User has double clicked a todo, display an input so they can edit the title
@@ -193,9 +201,12 @@
   document.addEventListener('Sync', function (event) {
     console.log('Sync event!')
     if (masqStore) {
-      getItem('notes').then(notes => {
-        if (Object.keys(notes).length === 0 && notes.constructor === Object) { } else { redrawTodosUI(notes) }
-      }).catch(err => console.log(err))
+      getItem('notes')
+        .then(notes => {
+          currentNotes = notes
+          if (Object.keys(notes).length === 0 && notes.constructor === Object) { } else { redrawTodosUI(currentNotes) }
+        })
+        .catch(err => console.log(err))
     }
   })
 })()
